@@ -1,19 +1,40 @@
 import { Request, Response } from 'express';
-import PortfolioService from '../services/portfolio';
+import { CategoryService } from '../services/category';
+import { CrudController } from './crud';
+import Category, { CategoryDocument } from '../models/category';
 
-const portfolioService = new PortfolioService();
-
-class PortfolioController {
-  async getAll(req: Request, res: Response) {
-    const portfolios = await portfolioService.getAll();
-    res.send(portfolios);
+export class CategoryController extends CrudController<CategoryDocument> {
+  constructor(categoryService: CategoryService<CategoryDocument>) {
+    super(categoryService);
   }
 
-  async getById(req: Request, res: Response) {
-    const { id } = req.params;
-    const portfolio = await portfolioService.getById(id);
-    res.send(portfolio);
+  async getAll(req: Request, res: Response): Promise<void> {
+    try {
+      const items = await this.crudService.getAll();
+      res.json(items);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  async getById(req: Request, res: Response): Promise<void> {
+    try {
+      const id = req.params.id;
+      const item = await this.crudService.getById(id);
+      if (!item) {
+        res.status(404).json({ error: 'Item not found' });
+        return;
+      }
+      res.json(item);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
   }
 }
 
-export default new PortfolioController();
+const categoryService = new CategoryService<CategoryDocument>(Category);
+const categoryController = new CategoryController(categoryService);
+
+export default categoryController;
