@@ -1,37 +1,16 @@
-import { Request, Response } from 'express';
-import PortfolioService from '../../services/portfolio';
+import { PortfolioService } from '../../services/portfolio';
+import { CrudController } from '../crud';
+import Portfolio, { PortfolioDocument } from '../../models/portfolio';
 
-const portfolioService = new PortfolioService();
-
-class PortfolioAdminController {
-  async getAll(req: Request, res: Response) {
-    const portfolios = await portfolioService.getAll();
-    res.send(portfolios);
-  }
-
-  async getById(req: Request, res: Response) {
-    const { id } = req.params;
-    const portfolio = await portfolioService.getById(id);
-    res.send(portfolio);
-  }
-  async create(req: Request, res: Response) {
-    const { name, description, images, date } = req.body;
-    const portfolio = await portfolioService.create({ name, description, images, date });
-    res.send(portfolio);
-  }
-
-  async update(req: Request, res: Response) {
-    const { id } = req.params;
-    const { name, description, images, date } = req.body;
-    const portfolio = await portfolioService.update(id, { name, description, images, date });
-    res.send(portfolio);
-  }
-
-  async delete(req: Request, res: Response) {
-    const { id } = req.params;
-    const portfolio = await portfolioService.delete(id);
-    res.send(portfolio);
+export class PortfolioController extends CrudController<PortfolioDocument> {
+  constructor(portfolioService: PortfolioService<PortfolioDocument>) {
+    super(portfolioService);
+    this.getAll = this.getAll.bind(this);
   }
 }
 
-export default new PortfolioAdminController();
+
+const portfolioService = new PortfolioService<PortfolioDocument>(Portfolio);
+const portfolioController = new PortfolioController(portfolioService);
+
+export default portfolioController;
