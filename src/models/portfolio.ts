@@ -17,10 +17,11 @@
 
 
 import mongoose, { Document } from 'mongoose';
+import {LocalizedContent, localizedContentSchema} from "../types/i18n"
 
-export interface PortfolioData {
-  title: string;
-  description: string;
+export interface PortfolioData extends Document {
+  title: LocalizedContent;
+  description: LocalizedContent;
   order: number;
   images: string[];
   date: Date;
@@ -31,11 +32,11 @@ export interface PortfolioDocument extends PortfolioData, Document {}
 
 const portfolioSchema = new mongoose.Schema<PortfolioDocument>(
   {
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    order: { type: Number, required: true },
-    images: { type: [String], required: true },
-    date: { type: Date, required: true },
+    title: { type: localizedContentSchema, required: false },
+    description: { type: localizedContentSchema, required: false },
+    order: { type: Number, required: false },
+    images: { type: [String], required: false },
+    date: { type: Date, required: false },
     categories: [{ type: mongoose.Types.ObjectId, ref: 'Category' }],
   },
   { timestamps: true }

@@ -3,17 +3,11 @@ import portfolioController, { PortfolioController } from '../../controllers/admi
 
 const router = express.Router();
 
-async function test(portfolioController: PortfolioController) {
-  const res = await portfolioController.crudService.getAll();
-  console.log(res);
-}
-
-test(portfolioController);
-
 router.get('/', (req, res) => portfolioController.getAll(req, res));
-router.get('/:id', portfolioController.getById);
-router.post('/', portfolioController.create);
-router.put('/:id', portfolioController.update);
-router.delete('/:id', portfolioController.delete);
+router.get('/:id', (req, res) => portfolioController.getById(req, res));
+router.post('/', (req, res) => portfolioController.create(req, res));
+router.put('/:id', (req, res) => portfolioController.update(req, res));
+router.delete('/', (req, res) => portfolioController.deleteAll(req, res));
+router.delete('/:id', (req, res) => portfolioController.delete(req, res));
 
 export default router;

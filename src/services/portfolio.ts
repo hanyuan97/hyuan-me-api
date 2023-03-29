@@ -1,40 +1,41 @@
-import { Model, Document } from 'mongoose';
+import { Model, Document, Query } from 'mongoose';
 import { CrudService } from './crud';
+import {PortfolioData, PortfolioDocument} from '../models/portfolio'
 
 export class PortfolioService<T extends Document> extends CrudService<T> {
   constructor(model: Model<T>) {
     super(model);
   }
+  async getAll(
+    page=1,
+    limit=Number.MAX_SAFE_INTEGER,
+    sortField?: string,
+    sortOrder?: 'asc' | 'desc'
+  ): Promise<{ data: T[]; totalCount: number }> {
+    let query: Query<T[], T> = this.model.find().populate('categories');
+    const totalCount: number = await this.model.countDocuments();
+
+    if (sortField) {
+      const sortOrderVal = sortOrder === 'desc' ? -1 : 1;
+      query = query.sort({ [sortField]: sortOrderVal });
+    }
+    
+    const data = await query
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .exec();
+
+    return { data, totalCount };
+  }
+  async create(data: any): Promise<T> {
+    if (data._id) delete data._id;
+    if (!data.order) {
+      const maxOrder:any = await this.model.findOne().sort('-order');
+      const newOrder = maxOrder ? maxOrder.order + 1 : 0;
+      data.order = newOrder
+    }
+    return this.model.create(data);
+  }
 }
-
-// import Portfolio from '../models/portfolio';
-// import { createCrudService } from './crud'
-// const PortfolioService = createCrudService(Portfolio);
-// class PortfolioService {
-//   async getAll() {
-//     const portfolios = await Portfolio.find();
-//     return portfolios;
-//   }
-
-//   async getById(id: string) {
-//     const portfolio = await Portfolio.findById(id);
-//     return portfolio;
-//   }
-
-//   async create(data: any) {
-//     const portfolio = await Portfolio.create(data);
-//     return portfolio;
-//   }
-
-//   async update(id: string, data: any) {
-//     const portfolio = await Portfolio.findByIdAndUpdate(id, data, { new: true });
-//     return portfolio;
-//   }
-
-//   async delete(id: string) {
-//     const portfolio = await Portfolio.findByIdAndDelete(id);
-//     return portfolio;
-//   }
-// }
 
 export default PortfolioService;

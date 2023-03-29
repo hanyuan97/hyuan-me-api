@@ -12,15 +12,19 @@
 
 import mongoose, { Document } from 'mongoose';
 
+import {LocalizedContent, localizedContentSchema} from "../types/i18n"
+
 export interface CategoryData {
-  title: string;
+  title: LocalizedContent;
+  order: Number;
 }
 
 export interface CategoryDocument extends CategoryData, Document {}
 
 const CategorySchema = new mongoose.Schema<CategoryDocument>(
   {
-    title: { type: String, required: true },
+    title: { type: localizedContentSchema, required: true },
+    order: { type: Number, required: false }
   },
   { timestamps: true }
 );

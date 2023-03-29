@@ -11,8 +11,22 @@ export class CrudController<T extends Document> {
 
   async getAll(req: Request, res: Response): Promise<void> {
     try {
-      const items = await this.crudService.getAll();
-      res.json(items);
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const sortField = req.query.sortField as string || 'order';
+      const sortOrder = req.query.sortOrder as 'asc' | 'desc' || 'asc';
+
+      const { data, totalCount } = await this.crudService.getAll(page, limit, sortField, sortOrder);
+      
+      res.json({
+        data,
+        totalCount,
+        page,
+        limit,
+        totalPages: Math.ceil(totalCount / limit),
+        sortField,
+        sortOrder,
+      });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Internal server error' });
@@ -37,6 +51,8 @@ export class CrudController<T extends Document> {
   async create(req: Request, res: Response): Promise<void> {
     try {
       const item = await this.crudService.create(req.body);
+      console.log(req.body);
+      
       res.json(item);
     } catch (error) {
       console.error(error);
@@ -72,5 +88,10 @@ export class CrudController<T extends Document> {
       console.error(error);
       res.status(500).json({ error: 'Internal server error' });
     }
+  }
+
+  async deleteAll(req: Request, res: Response) {
+    const item = await this.crudService.deleteAll();
+    res.json(item);
   }
 }
