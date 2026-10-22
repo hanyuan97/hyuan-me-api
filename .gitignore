@@ -131,5 +131,5 @@ dist
 .pnp.*
 
 # others
-pnpm-lock.yaml
+# Keep pnpm-lock.yaml tracked for frozen, reproducible installs.
 .pnpm-store

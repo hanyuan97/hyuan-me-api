@@ -26,6 +26,7 @@ export interface PortfolioData extends Document {
   images: string[];
   time: string;
   github: string;
+  demo: string;
   date: Date;
   categories: string[];
 }
@@ -40,6 +41,7 @@ const portfolioSchema = new mongoose.Schema<PortfolioDocument>(
     images: { type: [String], required: false },
     time: { type: String, required: false },
     github: { type: String, required: false },
+    demo: { type: String, required: false },
     date: { type: Date, required: false },
     categories: [{ type: mongoose.Types.ObjectId, ref: 'Category' }],
   },
