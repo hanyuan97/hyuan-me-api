@@ -7,11 +7,13 @@
     "start": "node dist/index.js",
     "dev": "nodemon src/index.ts -L",
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test test/*.test.cjs"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
+  "engines": { "node": "24.22.1" },
+  "packageManager": "pnpm@8.4.0",
   "dependencies": {
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
